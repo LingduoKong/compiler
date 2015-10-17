@@ -4,37 +4,93 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+
 public class main {
 
     public static void main(String[] args) {
-        removeComments("foo.c", "output.txt");
+        String str = removeComments("lib.c");
+//        replaceMacroCode(str);
+        String[] strs = Scanner(str);
+        for (String s : strs) {
+            System.out.println(s);
+        }
     }
 
-    public static void replaceMacroCode(String readingFilePath, String newFilePath) {
-
+    public static String replaceMacroCode(String string) {
+        String[] res = string.split("#define\\*\n");
+        int i = 1;
+        for (String str : res) {
+            System.out.println(i++);
+            System.out.println(str);
+        }
+        return null;
     }
 
-    public static void removeComments(String readingFilePath, String newFilePath) {
+    public static String[] Scanner(String string) {
+        boolean inQuote = false;
+        Stack<String> stk = new Stack<>();
+        StringTokenizer stringTokenizer = new StringTokenizer(string, "\"'(){},;+-<>=!*/% ", true);
+        while (stringTokenizer.hasMoreTokens()) {
+            String tokens = stringTokenizer.nextToken();
+            if (tokens.equals("\"") && !stk.peek().equals("\\")) {
+                inQuote = !inQuote;
+                stk.push(tokens);
+                continue;
+            }
+            if (inQuote) {
+                if (stk.peek().equals("\"")) {
+                    stk.push(tokens);
+                } else {
+                    String str = stk.pop();
+                    str += tokens;
+                    stk.push(str);
+                }
+            } else {
+                if (stk.empty()) {
+                    if (!Pattern.matches("(?m)^\\s*$", tokens)) {
+                        stk.push(tokens);
+                    }
+                } else if (stk.peek().equals("<") && tokens.equals("<")
+                        || stk.peek().equals(">") && tokens.equals(">")
+                        || stk.peek().equals(">") && tokens.equals("=")
+                        || stk.peek().equals("<") && tokens.equals("=")
+                        || stk.peek().equals("=") && tokens.equals("=")
+                        || stk.peek().equals("!") && tokens.equals("=")
+                        ) {
+                    String str = stk.pop();
+                    str += tokens;
+                    stk.push(str);
+                } else {
+                    if (!Pattern.matches("(?m)^\\s*$", tokens)) {
+                        stk.push(tokens);
+                    }
+                }
+            }
+        }
+        String[] ar = new String[stk.size()];
+        stk.toArray(ar);
+        return ar;
+    }
+
+
+
+    public static String removeComments(String readingFilePath) {
         Path path = Paths.get(readingFilePath);
-        File file = new File(newFilePath);
+        String result = null;
         try {
             InputStream in = Files.newInputStream(path);
             BufferedReader reader = new BufferedReader((new InputStreamReader(in)));
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter fileWriter = new FileWriter(file, true);
             String str;
             StringBuilder sb = new StringBuilder();
             while ((str = reader.readLine()) != null) {
                 sb.append(str + "\n");
             }
-            String res = replaceMethod2(sb.toString());
-            fileWriter.append(res);
-            fileWriter.close();
+            result = replaceMethod2(sb.toString());
         } catch (IOException e) {
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
         }
+        return result;
     }
 
     public static String replaceMethod1(String str) {
