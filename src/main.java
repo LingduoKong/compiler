@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Stack;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class main {
@@ -18,11 +19,11 @@ public class main {
     }
 
     public static String replaceMacroCode(String string) {
-        String[] res = string.split("#define\\*\n");
-        int i = 1;
-        for (String str : res) {
-            System.out.println(i++);
-            System.out.println(str);
+        String[] temps = string.split("\n");
+        for (String temp : temps) {
+            if (Pattern.matches("(.*)(#define )(.*)", temp)) {
+                System.out.println(temp);
+            }
         }
         return null;
     }
@@ -33,19 +34,21 @@ public class main {
         StringTokenizer stringTokenizer = new StringTokenizer(string, "\"'(){},;+-<>=!*/% ", true);
         while (stringTokenizer.hasMoreTokens()) {
             String tokens = stringTokenizer.nextToken();
-            if (tokens.equals("\"") && !stk.peek().equals("\\")) {
-                inQuote = !inQuote;
-                stk.push(tokens);
-                continue;
-            }
-            if (inQuote) {
-                if (stk.peek().equals("\"")) {
-                    stk.push(tokens);
-                } else {
+            if (tokens.equals("\"")) {
+                if (inQuote) {
                     String str = stk.pop();
                     str += tokens;
                     stk.push(str);
+                } else {
+                    stk.push(tokens);
                 }
+                inQuote = !inQuote;
+                continue;
+            }
+            if (inQuote) {
+                String str = stk.pop();
+                str += tokens;
+                stk.push(str);
             } else {
                 if (stk.empty()) {
                     if (!Pattern.matches("(?m)^\\s*$", tokens)) {
