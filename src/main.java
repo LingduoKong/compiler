@@ -2,30 +2,37 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class main {
 
+    private static HashMap<String, String> MacroCode;
     public static void main(String[] args) {
         String str = removeComments("lib.c");
-//        replaceMacroCode(str);
+        MacroCode = replaceMacroCode(str);
         String[] strs = Scanner(str);
         for (String s : strs) {
             System.out.println(s);
         }
     }
 
-    public static String replaceMacroCode(String string) {
+    public static HashMap<String, String> replaceMacroCode(String string) {
+        HashMap<String, String> hashMap = new HashMap<>();
         String[] temps = string.split("\n");
         for (String temp : temps) {
-            if (Pattern.matches("(.*)(#define )(.*)", temp)) {
-                System.out.println(temp);
+            if (Pattern.matches("(#define)(\\s+)([A-Z]+)(\\s+)(..*)", temp)) {
+                String[] strs = temp.split("\\s+");
+                if (strs.length != 3) {
+                    System.out.println("macro code error!");
+                    return null;
+                }
+                hashMap.put(strs[1], strs[2]);
             }
         }
-        return null;
+        return hashMap;
     }
 
     public static String[] Scanner(String string) {
@@ -50,6 +57,9 @@ public class main {
                 str += tokens;
                 stk.push(str);
             } else {
+                if (MacroCode!= null && MacroCode.containsKey(tokens)) {
+                    tokens = MacroCode.get(tokens);
+                }
                 if (stk.empty()) {
                     if (!Pattern.matches("(?m)^\\s*$", tokens)) {
                         stk.push(tokens);
@@ -89,19 +99,14 @@ public class main {
             while ((str = reader.readLine()) != null) {
                 sb.append(str + "\n");
             }
-            result = replaceMethod2(sb.toString());
+            result = replaceMethod(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    public static String replaceMethod1(String str) {
-        String res = str.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
-        return res;
-    }
-
-    public static String replaceMethod2(String str) {
+    public static String replaceMethod(String str) {
         StringBuilder sb = new StringBuilder();
         Stack<String> stk = new Stack<>();
         int n = str.length();
@@ -133,6 +138,9 @@ public class main {
                     stk.pop();
                 }
             }
+        }
+        if (!stk.empty()) {
+            System.out.println("comments error");
         }
         return sb.toString();
     }
