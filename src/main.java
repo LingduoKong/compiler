@@ -9,13 +9,86 @@ import java.util.regex.Pattern;
 
 public class main {
 
-    private static HashMap<String, String> MacroCode;
     public static void main(String[] args) {
-        String str = removeComments("lib.c");
-        MacroCode = replaceMacroCode(str);
-        String[] strs = Scanner(str);
-        for (String s : strs) {
-            System.out.println(s);
+        for (String arg : args) {
+            String str = removeComments(arg);
+            HashMap<String, String> MacroCode = replaceMacroCode(str);
+            String[] strs = Scanner(str, MacroCode);
+            for (String s : strs) {
+                System.out.println(s);
+            }
+            run(strs);
+        }
+    }
+
+    public static void run(String[] tokens) {
+        Node last = null;
+        Node iterator = null;
+        Node node = null;
+        for (String token : tokens) {
+            if (token.matches("\\s*\\+\\s*") || token.matches("\\s*\\-\\s*")) {
+                node = new Node(token, "Operator", last);
+            }
+            else if (token.matches("\\s*<<\\s*") || token.matches("\\s*>>\\s*") || token.matches("\\s*=\\s*")) {
+                node = new Node(token, "Expression", last);
+            }
+            else if (token.matches("\\s*==\\s*") || token.matches("\\s*\\!=\\s*") || token.matches("\\s*>\\s*") || token.matches("\\s*<\\s*")
+                    || token.matches("\\s*<=\\s*") || token.matches("\\s*>=\\s*")) {
+                node = new Node(token, "Comparison operation", last);
+            }
+            else if (token.matches("\\s*\\*\\s*") || token.matches("\\s*/\\s*") || token.matches("\\s*%\\s*")) {
+                node = new Node(token, "Multiplicative expression", last);
+            }
+            else if (token.matches("\\s*if\\s*") || token.matches("\\s*else\\s*") || token.matches("\\s*while\\s*") || token.matches("\\s*do\\s*")
+                    || token.matches("\\s*for\\s*") || token.equals("\\s*return\\s*")) {
+                node = new Node(token, "Control", last);
+            }
+            else if (token.matches("\\s*int\\s*") || token.equals("\\s*String\\s*") || token.equals("\\s*extern\\s*")) {
+                node = new Node(token, "Type", last);
+            }
+            else if (token.matches("\\s*,\\s*") || token.matches("\\s*;\\s*")) {
+                node = new Node(token, "punctuation", last);
+            }
+            else if (token.matches("\".*?\"")) {
+                node = new Node(token, "CONST-STRING", last);
+            }
+            else if (token.matches("^\\d+$")) {
+                node = new Node(token, "CONST_INT", last);
+            }
+            else if (token.matches("\\s*\\{\\s*")) {
+                node = new Node(token, "Left-bracket", last);
+            }
+            else if (token.matches("\\s*\\}\\s*")) {
+                node = new Node(token, "Right-bracket", last);
+            }
+            else if (token.matches("\\s*\\[$\\s*")) {
+                node = new Node(token, "Left-square", last);
+            }
+            else if (token.matches("\\s*\\]\\s*")) {
+                node = new Node(token, "Right-square", last);
+            }
+            else if (token.matches("\\s*\\(\\s*")) {
+                node = new Node(token, "Left-parenthesis", last);
+            }
+            else if (token.matches("\\s*\\)\\s*")) {
+                node = new Node(token, "Right-parenthesis", last);
+            }
+            else if (token.matches("\\s*^[a-zA-Z_$][a-zA-Z_$0-9]*$\\s*")) {
+                node = new Node(token, "IDENT", last);
+            }
+            else {
+                System.out.println("Compiler Error: " + token);
+                System.exit(0);
+            }
+
+            if (last == null) {
+                iterator = node;
+            }
+            last = node;
+        }
+        while (iterator != null) {
+            System.out.println(iterator.getValue() + " : " + iterator.getType());
+            iterator = iterator.getNext();
         }
     }
 
@@ -35,12 +108,18 @@ public class main {
         return hashMap;
     }
 
-    public static String[] Scanner(String string) {
+    public static String[] Scanner(String string, HashMap<String, String> MacroCode) {
         boolean inQuote = false;
         Stack<String> stk = new Stack<>();
-        StringTokenizer stringTokenizer = new StringTokenizer(string, "\"'(){},;+-<>=!*/% ", true);
+
+        string = string.replaceAll("\\s*#(define|include).*\\n","");
+
+        StringTokenizer stringTokenizer = new StringTokenizer(string, "\"'(){}[],;+-<>=!*/% \n", true);
         while (stringTokenizer.hasMoreTokens()) {
             String tokens = stringTokenizer.nextToken();
+            if (!inQuote && Pattern.matches("\\s+", tokens)) {
+                continue;
+            }
             if (tokens.equals("\"")) {
                 if (inQuote) {
                     String str = stk.pop();
@@ -61,9 +140,7 @@ public class main {
                     tokens = MacroCode.get(tokens);
                 }
                 if (stk.empty()) {
-                    if (!Pattern.matches("(?m)^\\s*$", tokens)) {
-                        stk.push(tokens);
-                    }
+                    stk.push(tokens);
                 } else if (stk.peek().equals("<") && tokens.equals("<")
                         || stk.peek().equals(">") && tokens.equals(">")
                         || stk.peek().equals(">") && tokens.equals("=")
@@ -75,9 +152,7 @@ public class main {
                     str += tokens;
                     stk.push(str);
                 } else {
-                    if (!Pattern.matches("(?m)^\\s*$", tokens)) {
-                        stk.push(tokens);
-                    }
+                    stk.push(tokens);
                 }
             }
         }
@@ -85,8 +160,6 @@ public class main {
         stk.toArray(ar);
         return ar;
     }
-
-
 
     public static String removeComments(String readingFilePath) {
         Path path = Paths.get(readingFilePath);
