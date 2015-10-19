@@ -1,3 +1,8 @@
+/**
+ * please javac *.java at first
+ * then run java main path_of_file1.c path_of_file2.c path_of_file3.c ...
+ */
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,16 +12,14 @@ import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-public class main {
+public class main{
 
     public static void main(String[] args) {
         for (String arg : args) {
+            System.out.println(arg);
             String str = removeComments(arg);
             HashMap<String, String> MacroCode = replaceMacroCode(str);
             String[] strs = Scanner(str, MacroCode);
-            for (String s : strs) {
-                System.out.println(s);
-            }
             run(strs);
         }
     }
@@ -78,7 +81,7 @@ public class main {
             }
             else {
                 System.out.println("Compiler Error: " + token);
-                System.exit(0);
+                return;
             }
 
             if (last == null) {
