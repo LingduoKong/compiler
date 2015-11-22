@@ -13,38 +13,34 @@ Ltmp1:
 	movq	%rsp, %rbp
 Ltmp2:
 	.cfi_def_cfa_register %rbp
-	movq	%rdi, -8(%rbp)
-	movl	%esi, -12(%rbp)
-	movl	$0, -16(%rbp)
-LBB0_1:                                 ## =>This Loop Header: Depth=1
-                                        ##     Child Loop BB0_3 Depth 2
-	cmpl	$22000, -16(%rbp)       ## imm = 0x55F0
-	jge	LBB0_8
-## BB#2:                                ##   in Loop: Header=BB0_1 Depth=1
-	movl	$0, -20(%rbp)
-LBB0_3:                                 ##   Parent Loop BB0_1 Depth=1
-                                        ## =>  This Inner Loop Header: Depth=2
-	cmpl	$22000, -20(%rbp)       ## imm = 0x55F0
-	jge	LBB0_6
-## BB#4:                                ##   in Loop: Header=BB0_3 Depth=2
-	movslq	-20(%rbp), %rax
-	movslq	-16(%rbp), %rcx
-	imulq	$88000, %rcx, %rcx      ## imm = 0x157C0
-	addq	-8(%rbp), %rcx
-	movl	$1, (%rcx,%rax,4)
-## BB#5:                                ##   in Loop: Header=BB0_3 Depth=2
-	movl	-20(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -20(%rbp)
-	jmp	LBB0_3
-LBB0_6:                                 ##   in Loop: Header=BB0_1 Depth=1
-	jmp	LBB0_7
-LBB0_7:                                 ##   in Loop: Header=BB0_1 Depth=1
-	movl	-16(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -16(%rbp)
-	jmp	LBB0_1
-LBB0_8:
+	pushq	%r15
+	pushq	%r14
+	pushq	%rbx
+	pushq	%rax
+Ltmp3:
+	.cfi_offset %rbx, -40
+Ltmp4:
+	.cfi_offset %r14, -32
+Ltmp5:
+	.cfi_offset %r15, -24
+	movq	%rdi, %r15
+	xorl	%ebx, %ebx
+	leaq	_.memset_pattern(%rip), %r14
+	.align	4, 0x90
+LBB0_1:                                 ## %.preheader
+                                        ## =>This Inner Loop Header: Depth=1
+	leaq	(%r15,%rbx), %rdi
+	movl	$88000, %edx            ## imm = 0x157C0
+	movq	%r14, %rsi
+	callq	_memset_pattern16
+	addq	$88000, %rbx            ## imm = 0x157C0
+	cmpq	$1936000000, %rbx       ## imm = 0x73650400
+	jne	LBB0_1
+## BB#2:
+	addq	$8, %rsp
+	popq	%rbx
+	popq	%r14
+	popq	%r15
 	popq	%rbp
 	retq
 	.cfi_endproc
@@ -55,66 +51,6 @@ _dot_product:                           ## @dot_product
 	.cfi_startproc
 ## BB#0:
 	pushq	%rbp
-Ltmp3:
-	.cfi_def_cfa_offset 16
-Ltmp4:
-	.cfi_offset %rbp, -16
-	movq	%rsp, %rbp
-Ltmp5:
-	.cfi_def_cfa_register %rbp
-	movq	%rdi, -8(%rbp)
-	movq	%rsi, -16(%rbp)
-	movq	%rdx, -24(%rbp)
-	movl	%ecx, -28(%rbp)
-	movl	%r8d, -32(%rbp)
-	movl	-28(%rbp), %ecx
-	movl	%ecx, -36(%rbp)
-	movl	-32(%rbp), %ecx
-	movl	%ecx, -40(%rbp)
-	movl	$0, -44(%rbp)
-LBB1_1:                                 ## =>This Inner Loop Header: Depth=1
-	cmpl	$22000, -44(%rbp)       ## imm = 0x55F0
-	jge	LBB1_4
-## BB#2:                                ##   in Loop: Header=BB1_1 Depth=1
-	movslq	-44(%rbp), %rax
-	movslq	-36(%rbp), %rcx
-	imulq	$88000, %rcx, %rcx      ## imm = 0x157C0
-	addq	-8(%rbp), %rcx
-	movl	(%rcx,%rax,4), %edx
-	movslq	-40(%rbp), %rax
-	movslq	-44(%rbp), %rcx
-	imulq	$88000, %rcx, %rcx      ## imm = 0x157C0
-	addq	-16(%rbp), %rcx
-	imull	(%rcx,%rax,4), %edx
-	movslq	-40(%rbp), %rax
-	movslq	-36(%rbp), %rcx
-	imulq	$88000, %rcx, %rcx      ## imm = 0x157C0
-	addq	-24(%rbp), %rcx
-	addl	(%rcx,%rax,4), %edx
-	movl	%edx, (%rcx,%rax,4)
-## BB#3:                                ##   in Loop: Header=BB1_1 Depth=1
-	movl	-44(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -44(%rbp)
-	jmp	LBB1_1
-LBB1_4:
-	popq	%rbp
-	retq
-	.cfi_endproc
-
-	.section	__TEXT,__literal4,4byte_literals
-	.align	2
-LCPI2_0:
-	.long	1148846080              ## float 1000
-LCPI2_1:
-	.long	1232348160              ## float 1.0E+6
-	.section	__TEXT,__text,regular,pure_instructions
-	.globl	_main
-	.align	4, 0x90
-_main:                                  ## @main
-	.cfi_startproc
-## BB#0:
-	pushq	%rbp
 Ltmp6:
 	.cfi_def_cfa_offset 16
 Ltmp7:
@@ -122,440 +58,388 @@ Ltmp7:
 	movq	%rsp, %rbp
 Ltmp8:
 	.cfi_def_cfa_register %rbp
-	subq	$304, %rsp              ## imm = 0x130
-	movl	$0, -4(%rbp)
-	callq	_clock
-	movl	$484000000, %ecx        ## imm = 0x1CD94100
-	movl	%ecx, %edi
-	movl	$4, %ecx
-	movl	%ecx, %esi
-	movq	%rax, -16(%rbp)
-	movl	$0, -80(%rbp)
-	callq	_calloc
-	movl	$484000000, %ecx        ## imm = 0x1CD94100
-	movl	%ecx, %edi
-	movl	$4, %ecx
-	movl	%ecx, %esi
-	movq	%rax, -88(%rbp)
-	callq	_calloc
-	movl	$484000000, %ecx        ## imm = 0x1CD94100
-	movl	%ecx, %edi
-	movl	$4, %ecx
-	movl	%ecx, %esi
-	movq	%rax, -96(%rbp)
-	callq	_calloc
-	movq	%rax, -104(%rbp)
-	callq	_clock
+	movslq	%ecx, %rax
+	movslq	%r8d, %r8
+	imulq	$88000, %rax, %r9       ## imm = 0x157C0
+	addq	%r9, %rdx
+	leaq	(%rdx,%r8,4), %r10
+	movl	(%rdx,%r8,4), %ecx
+	addq	%r9, %rdi
+	leaq	(%rsi,%r8,4), %rdx
 	movl	$1, %esi
-	movq	%rax, -24(%rbp)
-	movq	-88(%rbp), %rdi
-	callq	_init_matrix
+	.align	4, 0x90
+LBB1_1:                                 ## =>This Inner Loop Header: Depth=1
+	movl	(%rdx), %eax
+	imull	-4(%rdi,%rsi,4), %eax
+	addl	%ecx, %eax
+	movl	%eax, (%r10)
+	movl	88000(%rdx), %ecx
+	imull	(%rdi,%rsi,4), %ecx
+	addl	%eax, %ecx
+	movl	%ecx, (%r10)
+	addq	$2, %rsi
+	addq	$176000, %rdx           ## imm = 0x2AF80
+	cmpq	$22001, %rsi            ## imm = 0x55F1
+	jne	LBB1_1
+## BB#2:
+	popq	%rbp
+	retq
+	.cfi_endproc
+
+	.section	__TEXT,__literal16,16byte_literals
+	.align	4
+LCPI2_0:
+	.long	4294967294              ## 0xfffffffe
+	.long	4294967294              ## 0xfffffffe
+	.long	4294967294              ## 0xfffffffe
+	.long	4294967294              ## 0xfffffffe
+	.section	__TEXT,__literal4,4byte_literals
+	.align	2
+LCPI2_1:
+	.long	1232348160              ## float 1.0E+6
+LCPI2_2:
+	.long	1148846080              ## float 1000
+	.section	__TEXT,__text,regular,pure_instructions
+	.globl	_main
+	.align	4, 0x90
+_main:                                  ## @main
+	.cfi_startproc
+## BB#0:
+	pushq	%rbp
+Ltmp9:
+	.cfi_def_cfa_offset 16
+Ltmp10:
+	.cfi_offset %rbp, -16
+	movq	%rsp, %rbp
+Ltmp11:
+	.cfi_def_cfa_register %rbp
+	pushq	%r15
+	pushq	%r14
+	pushq	%r13
+	pushq	%r12
+	pushq	%rbx
+	subq	$40, %rsp
+Ltmp12:
+	.cfi_offset %rbx, -56
+Ltmp13:
+	.cfi_offset %r12, -48
+Ltmp14:
+	.cfi_offset %r13, -40
+Ltmp15:
+	.cfi_offset %r14, -32
+Ltmp16:
+	.cfi_offset %r15, -24
 	callq	_clock
-	movl	$2, %esi
-	movq	%rax, -32(%rbp)
-	movq	-96(%rbp), %rdi
-	callq	_init_matrix
+	movq	%rax, -48(%rbp)         ## 8-byte Spill
+	movl	$484000000, %edi        ## imm = 0x1CD94100
+	movl	$4, %esi
+	callq	_calloc
+	movq	%rax, %r15
+	movl	$484000000, %edi        ## imm = 0x1CD94100
+	movl	$4, %esi
+	callq	_calloc
+	movq	%rax, %r13
+	movl	$484000000, %edi        ## imm = 0x1CD94100
+	movl	$4, %esi
+	callq	_calloc
+	movq	%rax, %r12
+	xorl	%r14d, %r14d
 	callq	_clock
-	xorl	%esi, %esi
-	movq	%rax, -40(%rbp)
-	movq	-104(%rbp), %rdi
-	callq	_init_matrix
+	movq	%rax, -72(%rbp)         ## 8-byte Spill
+	leaq	_.memset_pattern(%rip), %rbx
+	.align	4, 0x90
+LBB2_1:                                 ## %.preheader.i
+                                        ## =>This Inner Loop Header: Depth=1
+	leaq	(%r15,%r14), %rdi
+	movl	$88000, %edx            ## imm = 0x157C0
+	movq	%rbx, %rsi
+	callq	_memset_pattern16
+	addq	$88000, %r14            ## imm = 0x157C0
+	cmpq	$1936000000, %r14       ## imm = 0x73650400
+	jne	LBB2_1
+## BB#2:                                ## %init_matrix.exit
+	xorl	%ebx, %ebx
 	callq	_clock
-	movl	$10, %ecx
-	movq	%rax, -48(%rbp)
-	movq	-88(%rbp), %rdi
-	movq	-96(%rbp), %rsi
-	movq	-104(%rbp), %rdx
-	movl	%ecx, -132(%rbp)        ## 4-byte Spill
-	movl	-132(%rbp), %r8d        ## 4-byte Reload
-	callq	_dot_product
+	movq	%rax, -56(%rbp)         ## 8-byte Spill
+	leaq	_.memset_pattern(%rip), %r14
+	.align	4, 0x90
+LBB2_3:                                 ## %.preheader.i6
+                                        ## =>This Inner Loop Header: Depth=1
+	leaq	(%r13,%rbx), %rdi
+	movl	$88000, %edx            ## imm = 0x157C0
+	movq	%r14, %rsi
+	callq	_memset_pattern16
+	addq	$88000, %rbx            ## imm = 0x157C0
+	cmpq	$1936000000, %rbx       ## imm = 0x73650400
+	jne	LBB2_3
+## BB#4:                                ## %init_matrix.exit7
+	xorl	%ebx, %ebx
 	callq	_clock
-	movq	%rax, -56(%rbp)
-	movl	$0, -68(%rbp)
-LBB2_1:                                 ## =>This Loop Header: Depth=1
-                                        ##     Child Loop BB2_3 Depth 2
-	cmpl	$22000, -68(%rbp)       ## imm = 0x55F0
-	jge	LBB2_8
-## BB#2:                                ##   in Loop: Header=BB2_1 Depth=1
-	movl	$0, -72(%rbp)
-LBB2_3:                                 ##   Parent Loop BB2_1 Depth=1
+	movq	%rax, -64(%rbp)         ## 8-byte Spill
+	leaq	_.memset_pattern(%rip), %r14
+	.align	4, 0x90
+LBB2_5:                                 ## %.preheader.i13
+                                        ## =>This Inner Loop Header: Depth=1
+	leaq	(%r12,%rbx), %rdi
+	movl	$88000, %edx            ## imm = 0x157C0
+	movq	%r14, %rsi
+	callq	_memset_pattern16
+	addq	$88000, %rbx            ## imm = 0x157C0
+	cmpq	$1936000000, %rbx       ## imm = 0x73650400
+	jne	LBB2_5
+## BB#6:                                ## %init_matrix.exit14
+	callq	_clock
+	movq	%rax, %r14
+	movl	880040(%r12), %eax
+	addq	$40, %r13
+	xorl	%ecx, %ecx
+	xorl	%edx, %edx
+	.align	4, 0x90
+LBB2_7:                                 ## %vector.body
+                                        ## =>This Inner Loop Header: Depth=1
+	movl	%edx, %esi
+	movl	%eax, %edi
+	movl	(%r13), %eax
+	movl	88000(%r13), %edx
+	imull	880000(%r15,%rcx,4), %eax
+	imull	880004(%r15,%rcx,4), %edx
+	addl	%edi, %eax
+	addl	%esi, %edx
+	addq	$2, %rcx
+	addq	$176000, %r13           ## imm = 0x2AF80
+	cmpq	$22000, %rcx            ## imm = 0x55F0
+	jne	LBB2_7
+## BB#8:                                ## %middle.block
+	addl	%eax, %edx
+	movl	%edx, 880040(%r12)
+	callq	_clock
+	movq	%rax, %r15
+	addq	$48, %r12
+	xorl	%eax, %eax
+	movdqa	LCPI2_0(%rip), %xmm0    ## xmm0 = [4294967294,4294967294,4294967294,4294967294]
+	xorl	%ebx, %ebx
+	.align	4, 0x90
+LBB2_9:                                 ## %overflow.checked35
+                                        ## =>This Loop Header: Depth=1
+                                        ##     Child Loop BB2_10 Depth 2
+	movd	%ebx, %xmm2
+	pxor	%xmm1, %xmm1
+	movl	$22000, %ecx            ## imm = 0x55F0
+	movq	%r12, %rdx
+	.align	4, 0x90
+LBB2_10:                                ## %vector.body31
+                                        ##   Parent Loop BB2_9 Depth=1
                                         ## =>  This Inner Loop Header: Depth=2
-	cmpl	$22000, -72(%rbp)       ## imm = 0x55F0
-	jge	LBB2_6
-## BB#4:                                ##   in Loop: Header=BB2_3 Depth=2
-	movl	$2, %eax
-	movslq	-72(%rbp), %rcx
-	movslq	-68(%rbp), %rdx
-	imulq	$88000, %rdx, %rdx      ## imm = 0x157C0
-	addq	-104(%rbp), %rdx
-	movl	(%rdx,%rcx,4), %esi
-	movl	%eax, -136(%rbp)        ## 4-byte Spill
-	movl	%esi, %eax
-	cltd
-	movl	-136(%rbp), %esi        ## 4-byte Reload
-	idivl	%esi
-	addl	-80(%rbp), %edx
-	movl	%edx, -80(%rbp)
-## BB#5:                                ##   in Loop: Header=BB2_3 Depth=2
-	movl	-72(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -72(%rbp)
-	jmp	LBB2_3
-LBB2_6:                                 ##   in Loop: Header=BB2_1 Depth=1
-	jmp	LBB2_7
-LBB2_7:                                 ##   in Loop: Header=BB2_1 Depth=1
-	movl	-68(%rbp), %eax
-	addl	$1, %eax
-	movl	%eax, -68(%rbp)
-	jmp	LBB2_1
-LBB2_8:
-	leaq	L_.str(%rip), %rdi
-	movss	LCPI2_0(%rip), %xmm0    ## xmm0 = mem[0],zero,zero,zero
-	movss	LCPI2_1(%rip), %xmm1    ## xmm1 = mem[0],zero,zero,zero
-	movq	%rdi, -144(%rbp)        ## 8-byte Spill
-	movss	%xmm0, -148(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -152(%rbp)       ## 4-byte Spill
+	movdqu	-48(%rdx), %xmm4
+	movdqu	-32(%rdx), %xmm3
+	movdqa	%xmm4, %xmm5
+	psrld	$31, %xmm5
+	paddd	%xmm4, %xmm5
+	pand	%xmm0, %xmm5
+	psubd	%xmm5, %xmm4
+	paddd	%xmm2, %xmm4
+	movdqu	-16(%rdx), %xmm2
+	movdqa	%xmm3, %xmm5
+	psrld	$31, %xmm5
+	paddd	%xmm3, %xmm5
+	pand	%xmm0, %xmm5
+	psubd	%xmm5, %xmm3
+	paddd	%xmm1, %xmm3
+	movdqu	(%rdx), %xmm1
+	movdqa	%xmm2, %xmm5
+	psrld	$31, %xmm5
+	paddd	%xmm2, %xmm5
+	pand	%xmm0, %xmm5
+	psubd	%xmm5, %xmm2
+	movdqa	%xmm1, %xmm5
+	psrld	$31, %xmm5
+	paddd	%xmm1, %xmm5
+	pand	%xmm0, %xmm5
+	psubd	%xmm5, %xmm1
+	paddd	%xmm4, %xmm2
+	paddd	%xmm3, %xmm1
+	addq	$64, %rdx
+	addq	$-16, %rcx
+	jne	LBB2_10
+## BB#11:                               ## %middle.block32
+                                        ##   in Loop: Header=BB2_9 Depth=1
+	paddd	%xmm2, %xmm1
+	pshufd	$78, %xmm1, %xmm2       ## xmm2 = xmm1[2,3,0,1]
+	paddd	%xmm1, %xmm2
+	phaddd	%xmm2, %xmm2
+	movd	%xmm2, %ebx
+	incq	%rax
+	addq	$88000, %r12            ## imm = 0x157C0
+	cmpq	$22000, %rax            ## imm = 0x55F0
+	jne	LBB2_9
+## BB#12:
 	callq	_clock
-	movq	%rax, -64(%rbp)
-	movq	-24(%rbp), %rax
-	movq	%rax, %rdi
-	shrq	%rdi
-	movq	%rax, %rcx
-	andq	$1, %rcx
-	orq	%rdi, %rcx
-	cvtsi2ssq	%rcx, %xmm0
+	movq	-72(%rbp), %rdx         ## 8-byte Reload
+	testq	%rdx, %rdx
+	js	LBB2_13
+## BB#14:
+	cvtsi2ssq	%rdx, %xmm0
+	jmp	LBB2_15
+LBB2_13:
+	movq	%rdx, %rcx
+	shrq	%rcx
+	andq	$1, %rdx
+	orq	%rcx, %rdx
+	cvtsi2ssq	%rdx, %xmm0
 	addss	%xmm0, %xmm0
-	cvtsi2ssq	%rax, %xmm1
-	testq	%rax, %rax
-	movss	%xmm1, -156(%rbp)       ## 4-byte Spill
-	movss	%xmm0, -160(%rbp)       ## 4-byte Spill
-	js	LBB2_10
-## BB#9:
-	movss	-156(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -160(%rbp)       ## 4-byte Spill
-LBB2_10:
-	movss	-160(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-16(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -164(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -168(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -172(%rbp)       ## 4-byte Spill
-	js	LBB2_12
-## BB#11:
-	movss	-168(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -172(%rbp)       ## 4-byte Spill
-LBB2_12:
-	movss	-172(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	-164(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	LCPI2_1(%rip), %xmm0    ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	LCPI2_0(%rip), %xmm2    ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -108(%rbp)
-	movq	-32(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm3
-	testq	%rax, %rax
-	movss	%xmm0, -176(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -180(%rbp)       ## 4-byte Spill
-	movss	%xmm3, -184(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -188(%rbp)       ## 4-byte Spill
-	js	LBB2_14
-## BB#13:
-	movss	-184(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -188(%rbp)       ## 4-byte Spill
-LBB2_14:
-	movss	-188(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-24(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -192(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -196(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -200(%rbp)       ## 4-byte Spill
+LBB2_15:
+	movq	-48(%rbp), %rdx         ## 8-byte Reload
+	testq	%rdx, %rdx
 	js	LBB2_16
-## BB#15:
-	movss	-196(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -200(%rbp)       ## 4-byte Spill
-LBB2_16:
-	movss	-200(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	-192(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	-176(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	-180(%rbp), %xmm2       ## 4-byte Reload
-                                        ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -112(%rbp)
-	movq	-40(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm3
-	testq	%rax, %rax
-	movss	%xmm3, -204(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -208(%rbp)       ## 4-byte Spill
-	js	LBB2_18
 ## BB#17:
-	movss	-204(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -208(%rbp)       ## 4-byte Spill
+	xorps	%xmm2, %xmm2
+	cvtsi2ssq	%rdx, %xmm2
+	jmp	LBB2_18
+LBB2_16:
+	movq	%rdx, %rcx
+	shrq	%rcx
+	andq	$1, %rdx
+	orq	%rcx, %rdx
+	cvtsi2ssq	%rdx, %xmm2
+	addss	%xmm2, %xmm2
 LBB2_18:
-	movss	-208(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-32(%rbp), %rax
-	movq	%rax, %rcx
+	movq	-56(%rbp), %rdx         ## 8-byte Reload
+	testq	%rdx, %rdx
+	js	LBB2_19
+## BB#20:
+	cvtsi2ssq	%rdx, %xmm5
+	jmp	LBB2_21
+LBB2_19:
+	movq	%rdx, %rcx
 	shrq	%rcx
-	movq	%rax, %rdx
 	andq	$1, %rdx
 	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -212(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -216(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -220(%rbp)       ## 4-byte Spill
-	js	LBB2_20
-## BB#19:
-	movss	-216(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -220(%rbp)       ## 4-byte Spill
-LBB2_20:
-	movss	-220(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	-212(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	-176(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	-180(%rbp), %xmm2       ## 4-byte Reload
-                                        ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -116(%rbp)
-	movq	-48(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm3
-	testq	%rax, %rax
-	movss	%xmm3, -224(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -228(%rbp)       ## 4-byte Spill
+	cvtsi2ssq	%rdx, %xmm5
+	addss	%xmm5, %xmm5
+LBB2_21:
+	movq	-64(%rbp), %rdx         ## 8-byte Reload
+	testq	%rdx, %rdx
 	js	LBB2_22
-## BB#21:
-	movss	-224(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -228(%rbp)       ## 4-byte Spill
-LBB2_22:
-	movss	-228(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-40(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -232(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -236(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -240(%rbp)       ## 4-byte Spill
-	js	LBB2_24
 ## BB#23:
-	movss	-236(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -240(%rbp)       ## 4-byte Spill
+	cvtsi2ssq	%rdx, %xmm4
+	jmp	LBB2_24
+LBB2_22:
+	movq	%rdx, %rcx
+	shrq	%rcx
+	andq	$1, %rdx
+	orq	%rcx, %rdx
+	cvtsi2ssq	%rdx, %xmm4
+	addss	%xmm4, %xmm4
 LBB2_24:
-	movss	-240(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	-232(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	-176(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	-180(%rbp), %xmm2       ## 4-byte Reload
-                                        ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -120(%rbp)
-	movq	-56(%rbp), %rax
-	movq	%rax, %rcx
+	movss	LCPI2_1(%rip), %xmm1    ## xmm1 = mem[0],zero,zero,zero
+	movaps	%xmm4, %xmm6
+	subss	%xmm5, %xmm6
+	subss	%xmm0, %xmm5
+	subss	%xmm2, %xmm0
+	testq	%r14, %r14
+	js	LBB2_25
+## BB#26:
+	cvtsi2ssq	%r14, %xmm3
+	jmp	LBB2_27
+LBB2_25:
+	movq	%r14, %rcx
 	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm3
-	testq	%rax, %rax
-	movss	%xmm3, -244(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -248(%rbp)       ## 4-byte Spill
-	js	LBB2_26
-## BB#25:
-	movss	-244(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -248(%rbp)       ## 4-byte Spill
-LBB2_26:
-	movss	-248(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-48(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -252(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -256(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -260(%rbp)       ## 4-byte Spill
+	andq	$1, %r14
+	orq	%rcx, %r14
+	cvtsi2ssq	%r14, %xmm3
+	addss	%xmm3, %xmm3
+LBB2_27:
+	divss	%xmm1, %xmm0
+	movss	LCPI2_2(%rip), %xmm2    ## xmm2 = mem[0],zero,zero,zero
+	divss	%xmm1, %xmm5
+	divss	%xmm1, %xmm6
+	movaps	%xmm3, %xmm7
+	subss	%xmm4, %xmm7
+	divss	%xmm1, %xmm7
+	testq	%r15, %r15
 	js	LBB2_28
-## BB#27:
-	movss	-256(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -260(%rbp)       ## 4-byte Spill
-LBB2_28:
-	movss	-260(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	-252(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	-176(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	-180(%rbp), %xmm2       ## 4-byte Reload
-                                        ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -124(%rbp)
-	movq	-64(%rbp), %rax
-	movq	%rax, %rcx
-	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm3
-	testq	%rax, %rax
-	movss	%xmm3, -264(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -268(%rbp)       ## 4-byte Spill
-	js	LBB2_30
 ## BB#29:
-	movss	-264(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -268(%rbp)       ## 4-byte Spill
+	cvtsi2ssq	%r15, %xmm4
+	jmp	LBB2_30
+LBB2_28:
+	movq	%r15, %rcx
+	shrq	%rcx
+	andq	$1, %r15
+	orq	%rcx, %r15
+	cvtsi2ssq	%r15, %xmm4
+	addss	%xmm4, %xmm4
 LBB2_30:
-	movss	-268(%rbp), %xmm0       ## 4-byte Reload
-                                        ## xmm0 = mem[0],zero,zero,zero
-	movq	-56(%rbp), %rax
+	mulss	%xmm2, %xmm0
+	mulss	%xmm2, %xmm5
+	movss	%xmm5, -48(%rbp)        ## 4-byte Spill
+	mulss	%xmm2, %xmm6
+	movss	%xmm6, -56(%rbp)        ## 4-byte Spill
+	mulss	%xmm2, %xmm7
+	movss	%xmm7, -64(%rbp)        ## 4-byte Spill
+	movaps	%xmm4, %xmm5
+	subss	%xmm3, %xmm5
+	divss	%xmm1, %xmm5
+	mulss	%xmm2, %xmm5
+	movss	%xmm5, -72(%rbp)        ## 4-byte Spill
+	testq	%rax, %rax
+	js	LBB2_31
+## BB#32:
+	cvtsi2ssq	%rax, %xmm3
+	jmp	LBB2_33
+LBB2_31:
 	movq	%rax, %rcx
 	shrq	%rcx
-	movq	%rax, %rdx
-	andq	$1, %rdx
-	orq	%rcx, %rdx
-	cvtsi2ssq	%rdx, %xmm1
-	addss	%xmm1, %xmm1
-	cvtsi2ssq	%rax, %xmm2
-	testq	%rax, %rax
-	movss	%xmm0, -272(%rbp)       ## 4-byte Spill
-	movss	%xmm2, -276(%rbp)       ## 4-byte Spill
-	movss	%xmm1, -280(%rbp)       ## 4-byte Spill
-	js	LBB2_32
-## BB#31:
-	movss	-276(%rbp), %xmm0       ## 4-byte Reload
+	andq	$1, %rax
+	orq	%rcx, %rax
+	cvtsi2ssq	%rax, %xmm3
+	addss	%xmm3, %xmm3
+LBB2_33:
+	subss	%xmm4, %xmm3
+	divss	%xmm1, %xmm3
+	mulss	%xmm2, %xmm3
+	movss	%xmm3, -76(%rbp)        ## 4-byte Spill
+	cvtss2sd	%xmm0, %xmm0
+	leaq	L_.str(%rip), %r14
+	movb	$1, %al
+	movq	%r14, %rdi
+	callq	_printf
+	movss	-48(%rbp), %xmm0        ## 4-byte Reload
                                         ## xmm0 = mem[0],zero,zero,zero
-	movss	%xmm0, -280(%rbp)       ## 4-byte Spill
-LBB2_32:
-	movss	-280(%rbp), %xmm0       ## 4-byte Reload
+	cvtss2sd	%xmm0, %xmm0
+	movb	$1, %al
+	movq	%r14, %rdi
+	callq	_printf
+	movss	-56(%rbp), %xmm0        ## 4-byte Reload
                                         ## xmm0 = mem[0],zero,zero,zero
-	movss	-272(%rbp), %xmm1       ## 4-byte Reload
-                                        ## xmm1 = mem[0],zero,zero,zero
-	subss	%xmm0, %xmm1
-	movss	-152(%rbp), %xmm0       ## 4-byte Reload
+	cvtss2sd	%xmm0, %xmm0
+	movb	$1, %al
+	movq	%r14, %rdi
+	callq	_printf
+	movss	-64(%rbp), %xmm0        ## 4-byte Reload
                                         ## xmm0 = mem[0],zero,zero,zero
-	divss	%xmm0, %xmm1
-	movss	-148(%rbp), %xmm2       ## 4-byte Reload
-                                        ## xmm2 = mem[0],zero,zero,zero
-	mulss	%xmm2, %xmm1
-	movss	%xmm1, -128(%rbp)
-	cvtss2sd	-108(%rbp), %xmm0
-	movq	-144(%rbp), %rdi        ## 8-byte Reload
+	cvtss2sd	%xmm0, %xmm0
 	movb	$1, %al
+	movq	%r14, %rdi
 	callq	_printf
-	leaq	L_.str(%rip), %rdi
-	cvtss2sd	-112(%rbp), %xmm0
-	movl	%eax, -284(%rbp)        ## 4-byte Spill
+	movss	-72(%rbp), %xmm0        ## 4-byte Reload
+                                        ## xmm0 = mem[0],zero,zero,zero
+	cvtss2sd	%xmm0, %xmm0
 	movb	$1, %al
+	movq	%r14, %rdi
 	callq	_printf
-	leaq	L_.str(%rip), %rdi
-	cvtss2sd	-116(%rbp), %xmm0
-	movl	%eax, -288(%rbp)        ## 4-byte Spill
+	movss	-76(%rbp), %xmm0        ## 4-byte Reload
+                                        ## xmm0 = mem[0],zero,zero,zero
+	cvtss2sd	%xmm0, %xmm0
 	movb	$1, %al
+	movq	%r14, %rdi
 	callq	_printf
-	leaq	L_.str(%rip), %rdi
-	cvtss2sd	-120(%rbp), %xmm0
-	movl	%eax, -292(%rbp)        ## 4-byte Spill
-	movb	$1, %al
-	callq	_printf
-	leaq	L_.str(%rip), %rdi
-	cvtss2sd	-124(%rbp), %xmm0
-	movl	%eax, -296(%rbp)        ## 4-byte Spill
-	movb	$1, %al
-	callq	_printf
-	leaq	L_.str(%rip), %rdi
-	cvtss2sd	-128(%rbp), %xmm0
-	movl	%eax, -300(%rbp)        ## 4-byte Spill
-	movb	$1, %al
-	callq	_printf
-	movl	-80(%rbp), %ecx
-	movl	%eax, -304(%rbp)        ## 4-byte Spill
-	movl	%ecx, %eax
-	addq	$304, %rsp              ## imm = 0x130
+	movl	%ebx, %eax
+	addq	$40, %rsp
+	popq	%rbx
+	popq	%r12
+	popq	%r13
+	popq	%r14
+	popq	%r15
 	popq	%rbp
 	retq
 	.cfi_endproc
@@ -563,6 +447,14 @@ LBB2_32:
 	.section	__TEXT,__cstring,cstring_literals
 L_.str:                                 ## @.str
 	.asciz	"%f\n"
+
+	.section	__TEXT,__const
+	.align	4                       ## @.memset_pattern
+_.memset_pattern:
+	.long	1                       ## 0x1
+	.long	1                       ## 0x1
+	.long	1                       ## 0x1
+	.long	1                       ## 0x1
 
 
 .subsections_via_symbols
